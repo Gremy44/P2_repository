@@ -9,4 +9,8 @@
 [Ss]cripts
 pyvenv.cfg
 .venv
+.env
+.venv/
+.env/
 pip-selfcheck.json
+/env
