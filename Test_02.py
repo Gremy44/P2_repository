@@ -1,16 +1,19 @@
 import csv
 from distutils.filelist import findall
+from distutils.log import info
+from unicodedata import category
 import requests
 from bs4 import BeautifulSoup
+from soupsieve import escape
 
 url = "https://books.toscrape.com/index.html"
 url_2 = "https://books.toscrape.com/catalogue/category/books/romance_8/index.html"
 url_3 = "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html"
 
-
-def scraping(url):
+def scraping(url): # retourne 1 list de 10 élements / Prend url de cat_to_page
 
     #url = "http://books.toscrape.com/catalogue/rip-it-up-and-start-again_986/index.html"
+    str_product_description = ""
 
     response =  requests.get(url)
 
@@ -26,6 +29,8 @@ def scraping(url):
     #--extraction titre--
     title_lst = soup.find("ul",{"class":"breadcrumb"}).findAll("li",{"class":"active"})
     title = title_lst[0]
+    title = title.text
+    title = title.replace("," , " ")
     #print("Title : ", title.text)
 
     #--extraction price_including_tax--
@@ -43,8 +48,11 @@ def scraping(url):
     #--extraction product_description--
     product_description_lst = soup.findAll("p")
     product_description = product_description_lst[3]
-    #print("Product_description : ", product_description.text)
-
+    product_description = product_description.text
+    product_description = product_description.replace("," , " ")
+        
+    #print("Product_description : ", product_description)
+    #print(type(product_description))
     #--extraction category--
     category = soup.find("ul",{"class":"breadcrumb"}).findAll("a")
     #print("Category :", category[2].text)
@@ -65,9 +73,9 @@ def scraping(url):
 
     image_url = "http://books.toscrape.com/"+ image_url
 
-    print("image_url : ",image_url)
+    #print("image_url : ",image_url)
 
-    return url, universal_product_code[0].text, title.text, price_including_tax.text[1:],price_excluding_tax.text[1:], number_available.text,product_description.text, category[2].text, rating_convert(review_rating_str), image_url
+    return url, universal_product_code[0].text, title, price_including_tax.text[1:],price_excluding_tax.text[1:], number_available.text,product_description, category[2].text, rating_convert(review_rating_str), image_url
 
 def rating_convert(rate):
     rating = 0
@@ -81,7 +89,7 @@ def rating_convert(rate):
         rating = 4
     else:
         rating = 5
-    return rating
+    return str(rating)
 
 def id_page(url):
 
@@ -105,7 +113,7 @@ def id_page(url):
     
     return id_page,results
 
-def scrap_pages(url_3):
+def scrap_pages(url_3): # retourne 2 list : lien de chacunes des pages de tout le site / Catégories + page / Prend : url = "http://books.toscrape.com/index.html" en argument
 
     #url = "http://books.toscrape.com/index.html"
 
@@ -173,9 +181,10 @@ def scrap_pages(url_3):
 
         inc_02 += 1
 
-    return info_pages, genre_page # retourne les categorie + liens pa categorie + nb page 
+        #print(info_pages)
+    return info_pages, genre_page # retourne 2 list : lien de chacunes des pages de tout le site / Catégories + page  
 
-def cat_to_page(url_2): #fonction scrap de category à page
+def cat_to_page(url_2): # Retourne 1 list : lien de chacun des livres d'une page / Prend l'url de scrap_page
 
     url_livre=[]
     lst_url_livre = []
@@ -197,45 +206,35 @@ def cat_to_page(url_2): #fonction scrap de category à page
         
     return livres # retourne la liste des livres par categorie
 
-#print(scrap_pages(url))
-#print(len(scrap_pages(url)))
-genre = scrap_pages(url)[1]
-page_url = scrap_pages(url)[0]
 
+categorie = scrap_pages(url)[1]
+url_1 = scrap_pages(url)[0] # liste pages global du site 
 
+info_livre = []
+entete = ["product_page_url","universal_ product_code (upc)","title","price_including_tax","price_excluding_tax","number_available","product_description","category","review_rating","image_url"]
 
-for e in page_url : 
-    url_1 = e
-    print("E = " + e)
-    for n in cat_to_page(url_1) : 
-        url_2 = n
-        #print("N = " + n)
-        for d in scraping(url_2) :
-            url_3 = d
-            print("D = " + str(d))
+for index_01 in range(len(url_1)): # boucle sur le nombre de pages contenue sur le site 
+    cat = categorie[index_01]
+    with open(categorie[index_01] +".csv", "a+", encoding="UTF8") as file_object: #ecrit un fichier CSV Pour chacune des catégories
+        csvwriter = csv.writer(file_object)
+        csvwriter.writerow(cat)
+        csvwriter.writerow(entete)
+    
+    url_11 = url_1[index_01]
+    pages_livre = cat_to_page(url_11) # liste url par categorie 
 
-#print(len(scrap_pages(url)))
-"""print(genre)
-print("")
-print(page_url)"""
+    for index_02 in range(len(pages_livre)): # boucle le nombre de livres par categorie
 
-'''for list_l in scrap_pages(url):
-    #print("list : " + str(list_l))
-    for i in list_l : 
-        #print("i : " + str(i))
-        #print(i)
-        genre.append(i)
-genre = genre[94:]
+        url_12 = pages_livre[index_02]
+        livres = scraping(url_12)
 
-print(genre)
-print(len(scrap_pages(url)))
-print(scrap_pages(url))
-print(len(genre))'''
+        with open(categorie[index_01] +".csv", "a+", newline='', encoding="UTF8") as f:
+            csvwriter = csv.writer(f)
+            csvwriter.writerow(livres)
 
-'''genre = scrap_pages(url)[1]
-print(genre)
-print(len(genre))
-print("")
-page_url = scrap_pages(url)[0]
-print(page_url)
-print(len(page_url))'''
+        print(livres)
+        
+
+    
+    
+    
