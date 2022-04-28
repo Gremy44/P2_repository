@@ -11,3 +11,5 @@ pyvenv.cfg
 .venv
 pip-selfcheck.json
 /venv
+/scrap_CSV
+/img_article
