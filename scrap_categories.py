@@ -58,7 +58,7 @@ def scrap_article(url_article):
 
     return product_page_url, universal_product_code, title, price_including_tax, price_excluding_tax, number_available, product_description, category, review_rating,image_url
 
-url_category = "https://books.toscrape.com/catalogue/category/books/travel_2/index.html"
+url_category = "https://books.toscrape.com/catalogue/category/books/fiction_10/index.html"
 
 response =  requests.get(url_category) # requete
 soup = BeautifulSoup(response.text, 'lxml') # requete
