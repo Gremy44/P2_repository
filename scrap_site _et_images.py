@@ -168,16 +168,5 @@ for e in scrap_site(url):
 
             liste_infos_articles.append(d)
             
-
-        
-try:
-   
-   image = requests.get(liste_infos_articles[10])
-   
-   open("img_articles/" +liste_infos_articles[3] +".jpg" , 'wb').write(image.content)
-   
-except ValueError:
-   print("ValueError!")
-
        
 

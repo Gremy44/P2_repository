@@ -148,7 +148,7 @@ for e in scrap_site(url):
 
         liste_infos_articles = [] # reset de la liste sur le scrap d'article
 
-        compteur_pourcent = compteur_pourcent + 1
+        compteur_pourcent += 1
         
         print("Avancée scraping : " + str(compteur_pourcent/10) + "%")
 

@@ -6,6 +6,10 @@ import lxml
 from math import*
 import os
 
+
+url_category = "https://books.toscrape.com/catalogue/category/books/childrens_11/index.html"
+
+
 def rating_convert(rate): # converti la note en anglais => francais avec chiffre
     rating = 0
     if rate == "One":
@@ -58,8 +62,6 @@ def scrap_article(url_article):
 
     return product_page_url, universal_product_code, title, price_including_tax, price_excluding_tax, number_available, product_description, category, review_rating,image_url
 
-url_category = "https://books.toscrape.com/catalogue/category/books/fiction_10/index.html"
-
 response =  requests.get(url_category) # requete
 soup = BeautifulSoup(response.text, 'lxml') # requete
 
@@ -70,11 +72,24 @@ page_nb_pages = ceil(int(page_nb_livres)/20) # retourne le nombre de pages
 
 if page_nb_livres <= 20 :#page de moins de 20 ou 20 livres
 
+    print("")
+    print("Categorie choisie : " + url_category[52:-13])
+    print("")   
+
     for link in soup.find_all("div",{"class":"image_container"}): #retourne une liste avec toutes les URL des livres de la page
         
         lst_url_articles.append("https://books.toscrape.com/catalogue" + link.find("a")["href"][8:])
 
+        info_page = "https://books.toscrape.com/catalogue" + link.find("a")["href"][8:]
+
+        print("Livre scrappe : " + info_page)
+
 else : #pages de plus de 20 livres
+
+    print("")
+    print("Categorie choisie : " + url_category[52:-14])
+    print("")
+
     for i in range(0,page_nb_pages):#genere les nouvelles url et envoi une nouvelle requete a chaque nouvelle iteration
         
         url_category_nvl = url_category[:-11] + "/page-" + str(i+1) + ".html" # cree la nouvelle URL
@@ -87,6 +102,8 @@ else : #pages de plus de 20 livres
             lst_url_articles.append("https://books.toscrape.com/catalogue" + link.find("a")["href"][8:])    
             
             info_page = "https://books.toscrape.com/catalogue" + link.find("a")["href"][8:]
+
+            print("Livre scrappe : " + info_page)
 
             #retourne lst_url_articles, une liste de toutes les URL pour une categorie
             
@@ -109,11 +126,16 @@ with open( nom_fichier,"a+", newline='',encoding="UTF8") as ligne_un: #cree le f
     csvwriter = csv.writer(ligne_un)
     csvwriter.writerow(entete)
 
+print("")
+print("Ecriture du fichier CSV...")
 
 for page in lst_url_articles:#remplis chaques lignes avec les valeurs de la list lst_url_articles
     with open( nom_fichier,"a+", newline='',encoding="UTF8") as file_object: 
             csvwriter = csv.writer(file_object)
             csvwriter.writerow(scrap_article(page))
+
+print("")
+print("Categorie scrappee")
 
 
 

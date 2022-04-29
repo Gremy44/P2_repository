@@ -4,6 +4,10 @@ from bs4 import BeautifulSoup
 import lxml
 import os
 
+
+url_article = "https://books.toscrape.com/catalogue/bitch-planet-vol-1-extraordinary-machine-bitch-planet-collected-editions_882/index.html"
+
+
 def rating_convert(rate): # converti la note en anglais => francais avec chiffre
     rating = 0
     if rate == "One":
@@ -17,8 +21,6 @@ def rating_convert(rate): # converti la note en anglais => francais avec chiffre
     else:
         rating = "5 étoiles"
     return str(rating)
-
-url_article = "https://books.toscrape.com/catalogue/bitch-planet-vol-1-extraordinary-machine-bitch-planet-collected-editions_882/index.html"
 
 response =  requests.get(url_article) #objet requete dans 'response'
 soup = BeautifulSoup(response.text, 'lxml') #lxml pour le parseur 
@@ -68,6 +70,7 @@ print("Url de l'image : " + image_url)
 # --------------------------------------------------------------------
 # -------------------------------- CSV -------------------------------
 # --------------------------------------------------------------------
+
 nom_fichier = "scrap_CSV/" + title.replace(":"," ") + ".csv"
 entete = ["product_page_url","universal_ product_code (upc)","title","price_including_tax","price_excluding_tax","number_available","product_description","category","review_rating","image_url"]
 info_page = [product_page_url,universal_product_code,title,price_including_tax,price_excluding_tax,number_available,product_description,category,review_rating,image_url]
@@ -75,7 +78,7 @@ info_page = [product_page_url,universal_product_code,title,price_including_tax,p
 '''if not os.path.exists('/mydirectory'):
     os.makedirs('scrap_CSV')'''
 
-try:
+try: # creation du repertoire
     os.makedirs('scrap_CSV')
 except FileExistsError:
     pass
