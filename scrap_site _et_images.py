@@ -49,7 +49,10 @@ def scrap_article(url_article): # retourne les information d'un livre
 
     # ---- Exctraction product_description ---- 
     product_description = soup.findAll("p")[3].text.replace("," , " ")# extrait le valeur a l'index [3] de la list, retire les balises, remplace les "," par des espaces si présentent pour csv
-
+    
+    if product_description.isspace():
+        product_description = "Pas de description"
+    
     # ---- Exctraction category ----
     category = soup.find("ul",{"class":"breadcrumb"}).findAll("a")[2].text
 
@@ -123,7 +126,6 @@ except FileExistsError:
 #------------------------------------
 
 
-
 for e in scrap_site(url):
     print("Catégorie : " + e[52:-13])
 
@@ -137,26 +139,7 @@ for e in scrap_site(url):
     for n in scrap_categories(e):
         print("Livre scrapé : " + n[37:-15]) 
 
-        if not liste_infos_articles : # condition pour ne pas demarrer au premier tour quand la liste est vide
-            None
-        else : 
-            with open( nom_fichier,"a+", newline='',encoding="UTF8") as ligne_deux: #cree les lignes d'apres
-                csvwriter = csv.writer(ligne_deux)
-                csvwriter.writerow(liste_infos_articles)
-
-            # scrap image 
-
-            #------ creation repertoire ---------
-            try:
-                os.makedirs("img_articles/" + liste_infos_articles[7]) # cree repetoire et sous dossier en fonction de la categorie 
-            except FileExistsError:
-                pass
-            #------------------------------------
-
-            f = open("img_articles/" + liste_infos_articles[7] + "/" + str(compteur_pourcent) + "_" + liste_infos_articles[0][37:-15] + ".jpg",'wb') # nomage et chemin
-            response = requests.get(liste_infos_articles[9]) # recuperation de l'URL de l'image
-            f.write(response.content)
-            f.close()
+        
 
         liste_infos_articles = [] # reset de la liste sur le scrap d'article
 
@@ -168,5 +151,26 @@ for e in scrap_site(url):
 
             liste_infos_articles.append(d)
             
+        with open( nom_fichier,"a+", newline='',encoding="UTF8") as ligne_deux: #cree les lignes d'apres
+            csvwriter = csv.writer(ligne_deux)
+            csvwriter.writerow(liste_infos_articles)
+
+        # scrap image 
+
+        #------ creation repertoire ---------
+        try:
+            os.makedirs("img_articles/" + liste_infos_articles[7]) # cree repetoire et sous dossier en fonction de la categorie 
+        except FileExistsError:
+            pass
+        #------------------------------------
+        
+        if len(liste_infos_articles[0][37:-15]) > 120 : # diminue les noms trop long pour qu'ils puissent être écris 
+            f = open("img_articles/" + liste_infos_articles[7] + "/" + str(compteur_pourcent) + "_" + liste_infos_articles[0][37:-65] + ".jpg",'wb') # nomage et chemin
+        else :
+            f = open("img_articles/" + liste_infos_articles[7] + "/" + str(compteur_pourcent) + "_" + liste_infos_articles[0][37:-15] + ".jpg",'wb') # nomage et chemin
+        
+        response = requests.get(liste_infos_articles[9]) # recuperation de l'URL de l'image
+        f.write(response.content)
+        f.close()
        
 
