@@ -1,5 +1,4 @@
 import csv
-from unittest import result
 import requests
 from bs4 import BeautifulSoup
 import lxml
@@ -114,32 +113,30 @@ def scrap_site(url): # retourne une liste des URL de chaque genre
 
     return genre
 
+def creation_repertoire(chemin_repertoire): # cree un repertoire avec le chemin en argument
+    try:
+        os.makedirs(chemin_repertoire)
+    except FileExistsError:
+        pass
+
 
 liste_infos_articles = []
-compteur_pourcent = 0
+compteur_pourcent = 0 # variable pour la console, pour l'affichage du pourcentage 
 
-#------ creation repertoire ---------
-try:
-    os.makedirs('scrap_CSV')
-except FileExistsError:
-    pass
-#------------------------------------
-
+creation_repertoire('scrap_CSV') # création repertoire pour les fichiers CSV 
 
 for e in scrap_site(url):
     print("Catégorie : " + e[52:-13])
 
     nom_fichier = "scrap_CSV/" + e[52:-13] + ".csv"
     entete = ["product_page_url","universal_ product_code (upc)","title","price_including_tax","price_excluding_tax","number_available","product_description","category","review_rating","image_url"]
-    
+
     with open( nom_fichier,"a+", newline='',encoding="UTF8") as ligne_un: #cree le fichier et l'entete
         csvwriter = csv.writer(ligne_un)
         csvwriter.writerow(entete)
 
     for n in scrap_categories(e):
         print("Livre scrapé : " + n[37:-15]) 
-
-        
 
         liste_infos_articles = [] # reset de la liste sur le scrap d'article
 
@@ -157,12 +154,7 @@ for e in scrap_site(url):
 
         # scrap image 
 
-        #------ creation repertoire ---------
-        try:
-            os.makedirs("img_articles/" + liste_infos_articles[7]) # cree repetoire et sous dossier en fonction de la categorie 
-        except FileExistsError:
-            pass
-        #------------------------------------
+        creation_repertoire("img_articles/" + liste_infos_articles[7]) # création repertoire pour les images 
         
         if len(liste_infos_articles[0][37:-15]) > 120 : # diminue les noms trop long pour qu'ils puissent être écris 
             f = open("img_articles/" + liste_infos_articles[7] + "/" + str(compteur_pourcent) + "_" + liste_infos_articles[0][37:-65] + ".jpg",'wb') # nomage et chemin
