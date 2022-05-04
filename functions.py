@@ -97,9 +97,10 @@ def scrap_site(url): # retourne une liste des URL de chaque genre
     response =  requests.get(url)
     soup = BeautifulSoup(response.text, 'lxml')
     genre = []
+    nb_boucles = len(soup.find("ul",{"class":"nav nav-list"}).findAll("a")) # sort le nombre de categorie 
 
-    for link in range(soup.find("ul",{"class":"nav nav-list"}).findAll("a")): # boucle autant de fois qu'il y a de categories sur le site
-        #print("https://books.toscrape.com/" + soup.find("ul",{"class":"nav nav-list"}).findAll("a")[link]["href"])
+    for link in range(nb_boucles): # boucle autant de fois qu'il y a de categories sur le site
+        
         genre.append("https://books.toscrape.com/" + soup.find("ul",{"class":"nav nav-list"}).findAll("a")[link]["href"])
     
     genre = genre[1:] # enleve l'index de la liste 
