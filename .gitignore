@@ -13,4 +13,5 @@ pip-selfcheck.json
 /venv
 /scrap_CSV
 /img_articles
+__pycache__/
 /__pycache__
