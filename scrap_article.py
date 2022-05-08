@@ -1,22 +1,17 @@
 import csv
-import requests
-from bs4 import BeautifulSoup
 import shutil
 from functions import scrap_article, creation_repertoire # importation des mes fonctions
 
+
+url_article = "https://books.toscrape.com/catalogue/psycho-sanitarium-psycho-15_628/index.html"
+
+
 shutil.rmtree('img_articles', ignore_errors=True) # efface le repertoire 'img_articles' existant
-shutil.rmtree('scrap_CSV', ignore_errors=True) # # efface le repertoire 'scrap_CSV' existant
-
-
-url_article = "https://books.toscrape.com/catalogue/bitch-planet-vol-1-extraordinary-machine-bitch-planet-collected-editions_882/index.html"
-
-
-response =  requests.get(url_article) #objet requete dans 'response'
-soup = BeautifulSoup(response.text, 'lxml') #lxml pour le parseur 
+shutil.rmtree('scrap_CSV', ignore_errors=True) # efface le repertoire 'scrap_CSV' existant
 
 article_scrap = scrap_article(url_article) #recuperation des informations d'un article
 
-# ---- Retour console sur le scrap ---
+# ---- Retour console sur le scrap ----
 print("UPC : " + article_scrap[1] + "\n" +
       "Titre : " + article_scrap[2] + "\n" +
       "Prix avec taxes : " + article_scrap[3] + "\n" +
@@ -32,6 +27,9 @@ print("UPC : " + article_scrap[1] + "\n" +
 # --------------------------------------------------------------------
 
 nom_fichier = "scrap_CSV/" + article_scrap[2].replace(":"," ") + ".csv" # creation du nom des fichiers
+
+if len(nom_fichier) > 120 : # diminue les noms trop long pour qu'ils puissent être écris si limitation sur longueure
+      nom_fichier = "scrap_CSV/" + article_scrap[2][0:-50].replace(":"," ") + ".csv" # creation du nom des fichiers
 
 entete = ["product_page_url","universal_ product_code (upc)",
           "title","price_including_tax","price_excluding_tax",

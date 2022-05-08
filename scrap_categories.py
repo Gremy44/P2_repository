@@ -3,19 +3,18 @@ from math import*
 import shutil
 from functions import scrap_article, scrap_categories,creation_repertoire
 
-shutil.rmtree('img_articles', ignore_errors=True) # efface le repertoire 'img_articles'
-shutil.rmtree('scrap_CSV', ignore_errors=True) # # efface le repertoire 'scrap_CSV'
-
 
 url_category = "https://books.toscrape.com/catalogue/category/books/childrens_11/index.html"
 
+
+shutil.rmtree('img_articles', ignore_errors=True) # efface le repertoire 'img_articles'
+shutil.rmtree('scrap_CSV', ignore_errors=True) # efface le repertoire 'scrap_CSV'
 
 lst_url_articles = scrap_categories(url_category) # recupere la liste des url d'une categorie dans la liste lst_url_artciles
 
 print("Liens de la categorie scrapee :") # retour console de la liste des url d'une categorie
 for i in lst_url_articles:
     print(i)
-
 
 
 # --------------------------------------------------------------------

@@ -3,15 +3,15 @@ from math import*
 import shutil
 from functions import scrap_article, scrap_categories, scrap_site, creation_repertoire
 
-shutil.rmtree('img_articles', ignore_errors=True) # efface le repertoire 'img_articles'
-shutil.rmtree('scrap_CSV', ignore_errors=True) # efface le repertoire 'scrap_CSV'
-
 
 url = "https://books.toscrape.com/index.html"
 
 
-liste_infos_articles = []
+#liste_infos_articles = []
 compteur_pourcent = 0
+
+shutil.rmtree('img_articles', ignore_errors=True) # efface le repertoire 'img_articles'
+shutil.rmtree('scrap_CSV', ignore_errors=True) # efface le repertoire 'scrap_CSV'
 
 creation_repertoire('scrap_CSV')
 
